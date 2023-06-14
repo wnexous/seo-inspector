@@ -28,7 +28,7 @@ class BrowerHandler {
   async print() {
     console.log("Printando tela");
     return await this.page?.screenshot({
-      path: "./BOLACVHINHA.png",
+      path: "./public/bolachinha.png",
     });
   }
 
