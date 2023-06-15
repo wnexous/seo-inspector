@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npx prisma db push & next dev",
+    "migrate":"npx prisma migrate dev --name init",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^4.15.0",
     "@types/node": "20.3.1",
     "@types/react": "18.2.12",
     "@types/react-dom": "18.2.5",
@@ -17,11 +19,14 @@
     "eslint": "8.42.0",
     "eslint-config-next": "13.4.5",
     "next": "13.4.5",
+    "pg": "^8.11.0",
     "playwright": "^1.35.0",
+    "prisma": "^4.15.0",
     "puppeteer": "^20.7.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sass": "^1.63.4",
+    "server-only": "^0.0.1",
     "typescript": "5.1.3"
   }
 }
