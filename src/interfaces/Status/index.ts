@@ -1,0 +1,1 @@
+export type loginStatusInterface = "waiting" | "not-logged" | "logged"

@@ -1,0 +1,59 @@
+.divContent {
+    background-color: red;
+}
+
+
+
+.deviceButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+
+
+}
+
+.inputContent {
+    display: flex;
+    gap: 0.5rem;
+
+    input {
+        width: 100%;
+    }
+}
+
+.buttonNotSelected {
+    background-color: rgb(200, 200, 200);
+    color: rgb(140, 140, 140);
+}
+
+.topBar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.serverStatus {
+
+    display: flex;
+    gap: 0.5rem;
+
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        b {
+            background-color: rgb(181, 255, 154);
+            font-size: 0.75rem;
+            color: rgb(0, 0, 0, 0.5);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+
+        }
+
+
+    }
+
+}

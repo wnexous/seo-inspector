@@ -1,0 +1,18 @@
+.container {
+    height: 100vh;
+    background-color: rgb(126, 47, 75);
+}
+
+.filho {
+    height: 50vh;
+    max-width: min(calc(100vw - 200px), 1366px);
+    background-color: blue;
+    position: relative;
+}
+
+.neto {
+    height: 10rem;
+    background-color: red;
+    
+
+}

@@ -1,0 +1,10 @@
+.maxWidth {
+    // min-height: calc(100vh - 3rem);
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: center;
+
+    max-width: min(min(1366px, 95vw), calc(100vw - 20px));
+    min-width: 290px;
+    margin-inline: auto;
+}

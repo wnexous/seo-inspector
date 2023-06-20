@@ -1,0 +1,20 @@
+.content {
+
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    h2 {
+        color: inherit
+    }
+
+    span {
+        background-color: rgb(0, 0, 0, 0.1);
+        color: rgb(0, 0, 0, 0.4);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 700;
+    }
+}
+

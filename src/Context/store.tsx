@@ -1,4 +1,5 @@
-"use client";
+'use client'
+
 
 import {
   createContext,
@@ -8,33 +9,25 @@ import {
   useState,
 } from "react";
 
-type DataType = {
-  name: string;
-};
-
 
 interface ContextProps {
-  userId: string;
-  setUserId: Dispatch<SetStateAction<string>>;
-  data: DataType[];
-  setData: Dispatch<SetStateAction<DataType[]>>;
+  username: string;
+  setUsername: Dispatch<SetStateAction<string>>;
 }
 
 const GlobalContext = createContext<ContextProps>({
-  userId: "",
-  setUserId: (): string => "",
-  data: [],
-  setData: (): DataType[] => [],
+  username: "",
+  setUsername: (): string => "",
+
 });
 
-export const GlobalContextProvider = ({ children = <></> }) => {
-  console.log("CONTEXT CRIADO!!");
+export const GlobalContextProvider = ({ children }: {
+  children?: JSX.Element | any
+}) => {
 
-  const [userId, setUserId] = useState<string>("initial value");
-  const [data, setData] = useState<[] | DataType[]>([]);
-
+  const [username, setUsername] = useState<string>("");
   return (
-    <GlobalContext.Provider value={{ userId, setUserId, data, setData }}>
+    <GlobalContext.Provider value={{ username, setUsername }}>
       {children}
     </GlobalContext.Provider>
   );

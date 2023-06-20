@@ -10,7 +10,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users{
-  id Int  @id @default(autoincrement())
-  name String
+model Users {
+  id        String     @unique @default(uuid())
+  username  String     @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Login     Login[]
+  Sessions  Sessions[]
+}
+
+model Login {
+  loginId   String   @unique @default(uuid())
+  token     String   @default(uuid()) @db.VarChar(255)
+  userId    String   @db.VarChar(255)
+  user      Users?   @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sessions {
+  id            String   @unique @default(uuid())
+  socketToken   String   @default(uuid()) @db.VarChar(255)
+  userId        String   @db.VarChar(255)
+  user          Users?   @relation(fields: [userId], references: [id])
+  browserStatus String   @default("offline") @db.VarChar(255)
+  onAction      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

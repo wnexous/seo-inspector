@@ -1,7 +1,12 @@
+import Header from '@/Layout/Header/Index'
 import Head from 'next/head'
-import LoginLayout from '@/components/Login'
+import { PagePropsInterface } from './_app'
+import MaxWidth from '@/components/MaxWidth'
+import WebScrapping from '@/components/Inspector/views/WebScrapping'
 
-export default function Home() {
+export default function Home({ state }: PagePropsInterface) {
+
+
   return (
     <>
       <Head>
@@ -11,7 +16,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main >
-        <LoginLayout />
+        <Header username={state.profile!.username} />
+        <MaxWidth>
+          <WebScrapping />
+        </MaxWidth>
       </main>
     </>
   )

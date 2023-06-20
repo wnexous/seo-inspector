@@ -1,0 +1,40 @@
+.content {
+    z-index: 100;
+    background-color: rgb(255, 255, 255);
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    position: fixed;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    div {
+        height: 2rem;
+        width: 2rem;
+        border-radius: 4rem;
+        border-top: 2px solid rgb(27, 0, 201);
+
+        animation-name: rotateLopping;
+
+        animation-duration: 1s;
+        animation-fill-mode: forwards;
+
+        animation-iteration-count: infinite;
+
+    }
+}
+
+@keyframes rotateLopping {
+
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+}
