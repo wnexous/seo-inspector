@@ -9,13 +9,12 @@ import { RequestType } from "@/utils/Types/ResquestTypes";
 import { defaultReturnInterface } from "@/utils/Backend/Browser";
 import { useRouter } from "next/router";
 import { OUTPUT_getSession, OUTPUT_killSession } from "@/interfaces/Session/output";
+import { ServerStatus } from "@/utils/Client/ServerStatus";
+import { Devices } from "@/utils/Device";
 type deviceTypes = "mobile" | "tablet" | "desktop"
 
-interface devicesInterface {
-    name: string
-    key: string
-}
-interface serverStatusPropsInterface {
+
+export interface serverStatusPropsInterface {
     style: CSSProperties
     text: string
     toggleButton: {
@@ -25,7 +24,7 @@ interface serverStatusPropsInterface {
 }
 type serverStatusType = "enable" | "disable"
 
-interface ServerStatusInterface {
+export interface ServerStatusInterface {
     enable: serverStatusPropsInterface
     disable: serverStatusPropsInterface
 }
@@ -35,36 +34,8 @@ export default function NexusInspector({ state }: PagePropsInterface) {
     const MAX_URL_SIZE = 256
     const [serverStatus, setServerStatus] = useState<serverStatusType>("disable")
     const [sessionStatus, setSessionStatus] = useState<OUTPUT_getSession>()
-
-    const Devices: devicesInterface[] = [
-        { name: "Desktop", key: "desktop" },
-        { name: "Tablet", key: "tablet" },
-        { name: "Mobile", key: "mobile" },
-    ]
-
-    const ServerStatus: ServerStatusInterface = {
-        enable: {
-            text: "running",
-            style: {
-                backgroundColor: "rgb(181, 255, 154)"
-            },
-
-            toggleButton: {
-                text: "Parar",
-                key: RequestType.killSession
-            }
-        },
-        disable: {
-            text: "stopped",
-            style: {
-                backgroundColor: "rgb(255, 154, 154)"
-            },
-            toggleButton: {
-                text: "Iniciar",
-                key: RequestType.startSession
-            }
-        }
-    }
+    const [selectDevice, setSelectDevice] = useState(Devices[0].key)
+    const [urlInput, setUrlInput] = useState("")
 
     const router = useRouter()
 
@@ -75,25 +46,12 @@ export default function NexusInspector({ state }: PagePropsInterface) {
             }
         }).then((data: OUTPUT_getSession) => setSessionStatus(data))
     }
-    useEffect(() => {
-        // GET USER SESSIONS
-
-        getSessions()
-
-    }, [router])
-
-    useEffect(() => {
-        setServerStatus(sessionStatus?.isExist ? "enable" : "disable")
-    }, [sessionStatus])
-    const [selectDevice, setSelectDevice] = useState(Devices[0].key)
-    const [urlInput, setUrlInput] = useState("")
 
     const handleDevice = (device: any) => {
         setSelectDevice(device)
     }
 
     const handleServer = (serverState: string) => {
-
         if (serverState == RequestType.startSession) {
             ApiRequest.post({
                 url: "/api/session",
@@ -121,6 +79,33 @@ export default function NexusInspector({ state }: PagePropsInterface) {
             }).catch(err => console.log(err))
         }
     }
+
+    const handleInspector = () => {
+
+        console.log("FEIJAOZINHO");
+
+
+        ApiRequest.post({
+            url: "/api/session",
+            data: {
+                requestType: RequestType.deployInspector,
+                url: urlInput,
+                device: selectDevice
+            }
+        }).then((data: OUTPUT_killSession) => {
+            console.log(data);
+        }).catch(err => console.log(err))
+    }
+
+    useEffect(() => {
+        // GET USER SESSIONS
+        getSessions()
+
+    }, [router])
+
+    useEffect(() => {
+        setServerStatus(sessionStatus?.isExist ? "enable" : "disable")
+    }, [sessionStatus])
 
     return (<>
         <Header username={state.profile!.username} />
@@ -153,7 +138,7 @@ export default function NexusInspector({ state }: PagePropsInterface) {
                     <p>Insira abaixo o link do site que você deseja realizar a inspeção</p>
                     <div className={styles.inputContent}>
                         <input onChange={e => setUrlInput(e.target.value.slice(0, MAX_URL_SIZE))} type="url" id="url_input" value={urlInput} placeholder="url do site" />
-                        <button disabled={!!!urlInput.match(httpRegex) || !!!Devices.find(fdevice => fdevice.key == selectDevice)}>INSPECIONAR</button>
+                        <button onClick={handleInspector} disabled={!!!urlInput.match(httpRegex) || !!!Devices.find(fdevice => fdevice.key == selectDevice)}>INSPECIONAR</button>
                     </div>
                 </>
             </MaxWidth>

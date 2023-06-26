@@ -1,5 +1,7 @@
 import puppeteer, { Browser, Page } from "puppeteer";
 import { Database } from "../Database";
+import { INPUT_deployInspector, INPUT_deployRequest } from "@/interfaces/Session/input";
+import { Devices } from "@/utils/Device";
 
 let PageSession: BrowerHandler;
 
@@ -40,6 +42,8 @@ class BrowerHandler {
     (async () => {
       this.browser = await puppeteer.launch({ args: ["--no-sandbox"], headless: "new", })
       this._deploySessions()
+
+      
     })();
   }
 
@@ -50,9 +54,7 @@ class BrowerHandler {
         fetchedSession.forEach(async singleSession => {
           await this.createSession({ sessionId: singleSession.id, ownerId: singleSession.userId })
         })
-      }
-    )
-
+      })
   }
   createSession({ sessionId, ownerId }: defaultPageHandlerInterface) {
 
@@ -127,8 +129,39 @@ class BrowerHandler {
     this.sessions = newPageList
 
   }
-  getSession({ sessionId }: defaultPageHandlerInterface) {
-    return this.sessions.find(findSession => findSession.sessionId == sessionId)
+  getSession({ sessionId, ownerId }: defaultPageHandlerInterface) {
+    return this.sessions.find(findSession => findSession.sessionId == sessionId && findSession.ownerId == ownerId)
+  }
+
+  async deployRequest({ ownerId, sessionId, url, device }: INPUT_deployRequest) {
+    const getSession = this.getSession({ ownerId, sessionId })
+
+    const page = getSession?.page
+    const getDevice = Devices.find(dev => dev.key == device)
+
+    try {
+      await page?.goto(url);
+      await page?.setViewport({
+        width: getDevice?.resolution.width || 1366,
+        height: getDevice?.resolution.heigth || 768,
+        isMobile: getDevice!.key == "mobile"
+      })
+
+      console.log("esperando main");
+      await page?.waitForSelector('a', { timeout: 10000 })
+        .catch(err => console.log("MAIN NAO ENCONTRADA"));
+
+      console.log("main carregada");
+
+      await page?.screenshot({
+        path: "./AEE.png", type: "png"
+      })
+
+
+
+    } catch (error) {
+      console.log("ERRO NO DEPLOY", error);
+    }
   }
 }
 

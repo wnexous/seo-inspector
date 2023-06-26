@@ -5,9 +5,10 @@ import GetSession from "./components/GetSession";
 import StartSession from "./components/StartSession";
 import { Database } from "@/utils/Backend/Database";
 import { Users } from "@prisma/client";
+import DeployInspector from "./components/DeployInspector";
 
-interface sessionManagerInterface {
-  data: TypeRequest;
+export interface sessionManagerInterface {
+  data: any;
   profile: Users;
 }
 
@@ -15,11 +16,7 @@ export default async function SessionManager(
   sessionManager: sessionManagerInterface
 ) {
 
-  const fetchSession = await Database.sessions.findFirst({
-    where: {
-      userId: sessionManager.profile.id
-    }
-  })
+
   try {
     return (
       (sessionManager.data.requestType == RequestType.getSession &&
@@ -36,8 +33,13 @@ export default async function SessionManager(
         StartSession({
           user: sessionManager.profile,
 
+        })) ||
+      (sessionManager.data.requestType == RequestType.deployInspector &&
+        DeployInspector({
+          profile: sessionManager.profile,
+          ...sessionManager.data
         }))
-        
+
     );
   } catch (error) {
     console.log("ERRRRRRORRR");

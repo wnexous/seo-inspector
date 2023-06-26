@@ -1,4 +1,4 @@
-export interface INPUT_wsStartConnection {
-    usrname: string
+export interface INPUT_wsAuth {
+    username: string
     accessToken: string
 }

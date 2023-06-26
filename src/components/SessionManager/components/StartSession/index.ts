@@ -12,22 +12,34 @@ export default async function StartSession({
     }
   })
 
-  const newSession = await Database.sessions.create({
-    data: { userId: user.id },
-  });
+  if (!!!fetchSession) {
 
-  const getBrowerSession = await PageHandler.createSession({
-    sessionId: newSession.id,
-    ownerId: user.id,
-  });
-
-  if (getBrowerSession.error) {
-    Database.sessions.delete({
-      where: { id: newSession.id },
+    const newSession = await Database.sessions.create({
+      data: { userId: user.id },
     });
-    PageHandler.killSession({ sessionId: newSession.id, ownerId: user.id });
-    return { ...getBrowerSession, sessionKilled: true };
+
+    const getBrowserSession = await PageHandler.createSession({
+      sessionId: newSession.id,
+      ownerId: user.id,
+    });
+
+    if (getBrowserSession.error) {
+      Database.sessions.delete({
+        where: { id: newSession.id },
+      });
+      PageHandler.killSession({ sessionId: newSession.id, ownerId: user.id });
+      return { ...getBrowserSession, sessionKilled: true };
+    }
+
+    return { ...newSession, browser: { ...getBrowserSession } };
+
+  }
+  else {
+    const getBrowserSession = PageHandler.getSession({ ownerId: fetchSession.userId, sessionId: fetchSession.id })
+    return { ...fetchSession, browser: { ...getBrowserSession } };
+
   }
 
-  return { ...fetchSession, browser: { ...getBrowerSession } };
+
+
 }

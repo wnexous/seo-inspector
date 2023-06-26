@@ -1,6 +1,7 @@
+import { INPUT_wsAuth } from '@/interfaces/WebSocket';
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Server } from "socket.io";
-
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 declare global {
     namespace NodeJS {
@@ -10,51 +11,64 @@ declare global {
     }
 }
 
-
-const io = new Server({
-    cors: {
-        origin: "http://192.168.1.5:3000",
-        methods: ["GET", "POST"],
-        allowedHeaders: ["Access-Control-Allow-Origin"],
-        credentials: true
-    }
-});
-
-io.on('connection', (client) => {
-
-    console.log("auth", client.handshake.auth);
-    console.log('Novo cliente conectado', client.id);
-
-    client.emit("boa-vinda", {
-        mensagem: "OIN"
-    })
-});
-
-
-
-
-const SocketHandler = (req: NextApiRequest, res: NextApiResponse) => {
-
-
-    console.log("Status:", !!!globalThis.socket);
-    //@ts-ignore
-    if (!!!globalThis.socket) {
-
-        io.listen(5000)
-
-        console.log("INICINADO");
-
-        //@ts-ignore
-        globalThis.socket = true
-        res.send("Socket started")
-    }
-    else {
-        res.send("socket has started")
-        console.log("ja iniciado");
-    }
-
-
-
+interface defaultMessageInterface {
+    data: any,
+    socketId: string
 }
 
-export default SocketHandler
+class SocketHandler {
+
+    io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+    constructor(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
+        this.io = io
+        console.log("Socket listen on 5000");
+    }
+
+    sendMessage({ data, socketId }: defaultMessageInterface) {
+        console.table({ data, socketId });
+        this.io.to(socketId).emit(data)
+    }
+}
+
+function addSocketConnectionListener(io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) {
+    io.on('connection', (client) => {
+        if (
+            "accessToken" in client.handshake.auth &&
+            "socketToken" in client.handshake.auth &&
+            "username" in client.handshake.auth
+        ) {
+            client.emit("connection", { msg: "Conectado ao server com sucesso" })
+            const userAuth = <INPUT_wsAuth>client.handshake.auth
+            console.log("auth", userAuth);
+        }
+    });
+}
+
+const SocketDeploy = (req: NextApiRequest, res: NextApiResponse) => {
+    //@ts-ignore
+    if (!!!globalThis.socketHandler) {
+        console.log("INSTANCIANDO SOCKET");
+        const io = new Server({
+            cors: {
+                origin: "http://192.168.1.5:3000",
+                methods: ["GET", "POST"],
+                allowedHeaders: ["Access-Control-Allow-Origin"],
+                credentials: true
+            }
+        });
+
+        io.listen(5000)
+        addSocketConnectionListener(io)
+        //@ts-ignore
+        globalThis.socketHandler = new SocketHandler(io)
+        res.send({ error: false })
+    }
+    else {
+        console.log("socket has started");
+        res.send({ error: true })
+    }
+    //@ts-ignore
+    // return <SocketHandler>globalThis.socketHandler
+}
+
+export default SocketDeploy
